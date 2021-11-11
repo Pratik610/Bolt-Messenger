@@ -16,11 +16,19 @@ const io = new Server(server)
 
 app.use(json())
 
+app.use('/api/user', userRoutes)
+app.use('/api/chat', chatRoutes)
+
 const __dirname = path.resolve()
 app.use('/images', express.static(path.join(__dirname, '/images')))
 
-app.use('/api/user', userRoutes)
-app.use('/api/chat', chatRoutes)
+if (process.env.ENVIRONMENT === 'production') {
+	app.use(express.static(path.join(__dirname, '/frontend/build')))
+
+	app.get('*', (req, res) =>
+		res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+	)
+}
 
 let users = []
 
