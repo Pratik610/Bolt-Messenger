@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+/* width */
+::-webkit-scrollbar {
+	width: 1px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: #4b4949;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background: rgb(133, 114, 114);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+body{
+  /* background-color: #00171F; */
+  background-color: #070606;
+
+  color:  white;
+ font-family: 'Open Sans', sans-serif;
+}
+.heading-1 {
+  font-weight: 900 !important;
+}
+.heading-2 {
+  font-weight: 500 !important;
+}
+.main{
+  height: 100vh;
+}
+
+.back:hover{
+ color:rgb(180, 164, 164) !important;
+}
+.border-bottom{
+  border-bottom: 1px solid rgb(37, 34, 34) !important;
+}
+
+.home{
+  height: 100%;
+  /* background-color:#1E1E1E ; */
+}
+.users-list{
+  height: 100%;
+  background-color: #161B22;
+  overflow-y: scroll;
+}
+.chats{
+  height: 100%;
+  background-color: #161819;
+}
+.nav{
+ background-color:#001016;
+}
+i{
+  cursor: pointer;
+}
+.serach{
+  background-color:#1E1E1E !important ;
+  border-radius: 20px;
+  color: white !important;
+  padding: 2%;
+  border: none !important;
+}
+.sendmsg{
+ background-color:#010b0f !important ;
+  border-radius: 20px;
+  color: white !important;
+  
+  border: none !important;
+}
+
+
+.serach::placeholder{
+  text-align: center;
+}
+
+ @media only screen and (max-width:600px) {
+        body{
+           background-image: none;
+          background-size: cover;
+        }
+       
+      
+  }
+
+
+
+
+
+
+/* ......................... */
+.custom-shape-divider-bottom-1635130903 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-1635130903 svg {
+    position: relative;
+    display: block;
+    width: calc(184% + 1.3px);
+    height: 234px;
+    transform: rotateY(180deg);
+}
+
+.custom-shape-divider-bottom-1635130903 .shape-fill {
+    fill:#4285F4;
+}
+
+
+/* ..... */
