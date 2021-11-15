@@ -3,10 +3,12 @@ import User from '../models/UserModel.js'
 import Members from '../models/MemberModel.js'
 import { createTokken } from '../utils/tokken.js'
 
+// send google client to frontend
 export const getClientID = asyncHandler(async (req, res) => {
 	res.status(200).json(process.env.CLIENT_ID)
 })
 
+//  login with google (manageing the response)
 export const loginUser = asyncHandler(async (req, res) => {
 	const googleId = req.body.info.googleId
 	const profilePhoto = req.body.info.imageUrl
@@ -43,12 +45,12 @@ export const loginUser = asyncHandler(async (req, res) => {
 	}
 })
 
+// get login user info
 export const getLoginUserInfo = asyncHandler(async (req, res) => {
 	const id = req.user._id
 
 	const user = await User.findById(id)
 	if (user) {
-		
 		res.status(201).json(user)
 	} else {
 		res.status(404)
@@ -56,6 +58,7 @@ export const getLoginUserInfo = asyncHandler(async (req, res) => {
 	}
 })
 
+// search user
 export const searchUser = asyncHandler(async (req, res) => {
 	const search = req.body.search
 	const id = req.user._id
@@ -73,6 +76,7 @@ export const searchUser = asyncHandler(async (req, res) => {
 	}
 })
 
+// send friend request
 export const requestConnection = asyncHandler(async (req, res) => {
 	const id = req.body.id
 	const requestedUser = await User.findById(id)
@@ -86,6 +90,7 @@ export const requestConnection = asyncHandler(async (req, res) => {
 	}
 })
 
+// cancel friend request
 export const cancelRequestConnection = asyncHandler(async (req, res) => {
 	const id = req.body.id
 	const requestedUser = await User.findById(id)
@@ -103,6 +108,7 @@ export const cancelRequestConnection = asyncHandler(async (req, res) => {
 	}
 })
 
+// get pending friend requests
 export const getPendingRequests = asyncHandler(async (req, res) => {
 	const user = await User.findById(req.user._id)
 	if (user) {
@@ -116,6 +122,7 @@ export const getPendingRequests = asyncHandler(async (req, res) => {
 	}
 })
 
+// add friend
 export const addToFriends = asyncHandler(async (req, res) => {
 	const id = req.body.id
 	const requestedUser = await User.findById(id)

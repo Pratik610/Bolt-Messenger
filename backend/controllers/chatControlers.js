@@ -3,6 +3,7 @@ import User from '../models/UserModel.js'
 import Members from '../models/MemberModel.js'
 import Chat from '../models/ChatModel.js'
 
+// get chats with user
 export const getChats = asyncHandler(async (req, res) => {
 	const user1 = req.body.users[0]
 	const user2 = req.body.users[1]
@@ -19,6 +20,7 @@ export const getChats = asyncHandler(async (req, res) => {
 	}
 })
 
+// send message to user
 export const sendMessage = asyncHandler(async (req, res) => {
 	const chat = Chat.create({
 		convoId: req.body.convoId,

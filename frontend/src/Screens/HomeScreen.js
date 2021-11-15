@@ -37,7 +37,7 @@ const HomeScreen = ({ history }) => {
 							<div
 								className='p-2  chats '
 								style={{ backgroundColor: '#00171F' }}>
-								<Search user={user} />
+								<Search user={user} history={history} />
 								<div className='p-1 pb-2 border-bottom'>
 									<div className='mt-1  justify-content-between align-items-center ps-2 pe-2 d-flex'>
 										<div>

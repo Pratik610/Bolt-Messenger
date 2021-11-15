@@ -9,7 +9,7 @@ import {
 import { getChatAction } from '../Actions/chatActions.js'
 import Loader from './Loader'
 
-const Search = ({ user }) => {
+const Search = ({ user, history }) => {
 	const dispatch = useDispatch()
 
 	const searchUser = useSelector((state) => state.searchUser)
@@ -23,6 +23,10 @@ const Search = ({ user }) => {
 				type: SEARCH_USER_RESET,
 			})
 		}
+	}
+
+	const redirectToMsg = (id) => {
+		history.push(`/chat/${id}`)
 	}
 
 	return (
@@ -44,49 +48,100 @@ const Search = ({ user }) => {
 				searched.map(
 					(searchedUser) =>
 						searchedUser._id !== user._id && (
-							<div key={searchedUser._id} className='p-1 pb-2 border-bottom'>
-								<div className='mt-1  justify-content-between align-items-center ps-2 pe-2 d-flex'>
-									<div>
-										<img
-											src={searchedUser.profilePhoto}
-											alt=''
-											width='50'
-											referrerPolicy='no-referrer'
-											className='rounded-circle'
-										/>
-
-										<h6
-											style={{ fontSize: '1em', fontWeight: 'bold' }}
-											className='d-inline ms-3'>
-											{searchedUser.name}
-										</h6>
-									</div>
-									{user.friends.find((id) => id === searchedUser._id) ? (
-										<i
-											className='fas h5 fa-comment-alt'
-											onClick={() =>
-												dispatch(getChatAction(searchedUser._id))
-											}></i>
-									) : (
+							<div key={searchedUser._id}>
+								<div className='p-1 d-none d-md-block pb-2 border-bottom'>
+									<div className='mt-1  justify-content-between align-items-center ps-2 pe-2 d-flex'>
 										<div>
-											{searchedUser.pendingRequest.find(
-												(id) => id === user._id
-											) ? (
-												<i
-													className='fas fa-user-times'
-													onClick={() =>
-														dispatch(cancelConnectionAction(searchedUser._id))
-													}></i>
-											) : (
-												<i
-													className='fas fa-user-plus'
-													onClick={() =>
-														dispatch(requestConnectionAction(searchedUser._id))
-													}></i>
-											)}
+											<img
+												src={searchedUser.profilePhoto}
+												alt=''
+												width='50'
+												referrerPolicy='no-referrer'
+												className='rounded-circle'
+											/>
+
+											<h6
+												style={{ fontSize: '1em', fontWeight: 'bold' }}
+												className='d-inline ms-3'>
+												{searchedUser.name}
+											</h6>
 										</div>
-									)}
+										{user.friends.find((id) => id === searchedUser._id) ? (
+											<i
+												className='fas h5 fa-comment-alt'
+												onClick={() =>
+													dispatch(getChatAction(searchedUser._id))
+												}></i>
+										) : (
+											<div>
+												{searchedUser.pendingRequest.find(
+													(id) => id === user._id
+												) ? (
+													<i
+														className='fas fa-user-times'
+														onClick={() =>
+															dispatch(cancelConnectionAction(searchedUser._id))
+														}></i>
+												) : (
+													<i
+														className='fas fa-user-plus'
+														onClick={() =>
+															dispatch(
+																requestConnectionAction(searchedUser._id)
+															)
+														}></i>
+												)}
+											</div>
+										)}
+									</div>
 								</div>
+								{/* for mobile */}
+								<div
+									key={searchedUser._id}
+									className='p-1 d-md-none pb-2 border-bottom'>
+									<div className='mt-1  justify-content-between align-items-center ps-2 pe-2 d-flex'>
+										<div>
+											<img
+												src={searchedUser.profilePhoto}
+												alt=''
+												width='50'
+												referrerPolicy='no-referrer'
+												className='rounded-circle'
+											/>
+
+											<h6
+												style={{ fontSize: '1em', fontWeight: 'bold' }}
+												className='d-inline ms-3'>
+												{searchedUser.name}
+											</h6>
+										</div>
+										{user.friends.find((id) => id === searchedUser._id) ? (
+											<i
+												className='fas h5 fa-comment-alt'
+												onClick={() => redirectToMsg(searchedUser._id)}></i>
+										) : (
+											<div>
+												{searchedUser.pendingRequest.find(
+													(id) => id === user._id
+												) ? (
+													<i
+														className='fas fa-user-times'
+														onClick={() =>
+															dispatch(cancelConnectionAction(searchedUser._id))
+														}></i>
+												) : (
+													<i
+														className='fas fa-user-plus'
+														onClick={() =>
+															dispatch(
+																requestConnectionAction(searchedUser._id)
+															)
+														}></i>
+												)}
+											</div>
+										)}
+									</div>
+								</div>{' '}
 							</div>
 						)
 				)}

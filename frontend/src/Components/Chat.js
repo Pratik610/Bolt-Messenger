@@ -4,6 +4,8 @@ import { sendMessageAction } from '../Actions/chatActions'
 import { io } from 'socket.io-client'
 const Chat = ({ user }) => {
 	const [msg, setMsg] = useState('')
+	const [chatMessages, setChatMessages] = useState([])
+	const [newMsg, setNewMsg] = useState(false)
 	const scrollRef = useRef()
 	const socket = useRef()
 	const dispatch = useDispatch()
@@ -25,7 +27,13 @@ const Chat = ({ user }) => {
 		})
 	}, [])
 
-	useEffect(() => {}, [chats])
+	useEffect(() => {
+		chats && setChatMessages(chats.chats)
+	}, [chats])
+
+	useEffect(() => {
+		newMsg && setChatMessages([...chatMessages, newMsg])
+	}, [newMsg])
 
 	useEffect(() => {
 		socket.current.emit('addUser', user._id)
@@ -35,19 +43,24 @@ const Chat = ({ user }) => {
 	}, [user, socket])
 
 	useEffect(() => {
-		if (chats) {
-			scrollRef?.current.scrollIntoView()
+		if (chatMessages) {
+			scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
 		}
-	}, [chats])
+	}, [chatMessages])
 
 	const send = (e) => {
 		e.preventDefault()
 		const reciverId = chats.users.find((u) => u._id !== user._id)
-		socket.current.emit('sendMessage', {
-			senderId: user._id,
-			reciverId,
+		setNewMsg({
+			sender: user._id,
 			message: msg,
 		})
+
+		// socket.current.emit('sendMessage', {
+		// 	sender: user._id,
+		// 	reciver,
+		// 	message: msg,
+		// })
 		dispatch(sendMessageAction(chats.convoId, msg))
 	}
 
@@ -55,7 +68,7 @@ const Chat = ({ user }) => {
 		<>
 			<div
 				style={{ borderRadius: '15px' }}
-				className='d-none d-lg-block p-0 chats col-lg-8 position-relative '>
+				className='d-none d-md-block p-0 chats col-12 col-lg-8 position-relative '>
 				{!chats && (
 					<div className='d-flex pb-5 justify-content-center h-100 align-items-center'>
 						<div>
@@ -75,6 +88,7 @@ const Chat = ({ user }) => {
 						{/* ..... */}
 
 						<div
+							id='msg'
 							style={{ position: 'sticky', top: '0%' }}
 							className='d-flex nav  w-100  justify-content-between ps-4 pe-4  align-items-center p-3'>
 							<div>
@@ -104,33 +118,35 @@ const Chat = ({ user }) => {
 
 						{/* ....... */}
 						<div
-							style={{ overflowY: 'scroll', maxHeight: '80%' }}
-							className='ps-md-3 pe-md-3 '>
-							{chats.chats.map((msg) => (
-								<div ref={scrollRef} key={msg._id}>
-									<div
-										className={`p-1 pe-2  d-flex ${
-											user._id === msg.sender && 'justify-content-end'
-										}`}>
-										<p
-											className=' mb-1  p-2'
-											style={{
-												maxWidth: '75%',
-												wordWrap: 'break-word',
-												backgroundColor: '#47489E',
-												borderRadius: '20px',
-											}}>
-											<span>{msg.message}</span>
-										</p>
+							style={{ overflowY: 'scroll', height: '80%' }}
+							className='ps-md-3 pe-md-3  '>
+							{chatMessages &&
+								chatMessages.map((msg) => (
+									<div key={msg._id}>
+										<div
+											className={`p-1 pe-2  d-flex ${
+												user._id === msg.sender && 'justify-content-end'
+											}`}>
+											<p
+												className=' mb-1  p-2'
+												style={{
+													maxWidth: '75%',
+													wordWrap: 'break-word',
+													backgroundColor: '#47489E',
+													borderRadius: '20px',
+												}}>
+												<span>{msg.message}</span>
+											</p>
+										</div>
 									</div>
-								</div>
-							))}
+								))}
+							<div ref={scrollRef}></div>
 						</div>
 						<div
 							style={{ bottom: '0%', zIndex: '3' }}
 							className='position-absolute  p-2 w-100'>
 							<form className='form-inline' onSubmit={send}>
-								<div className='input-group mb-3'>
+								<div className='input-group mb-2'>
 									<input
 										type='text'
 										value={msg}

@@ -77,6 +77,10 @@ i{
   border: none !important;
 }
 
+.messages{
+  height: 80vh !important;
+}
+
 
 .serach::placeholder{
   text-align: center;
