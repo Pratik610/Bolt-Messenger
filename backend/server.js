@@ -57,10 +57,10 @@ io.on('connection', (socket) => {
 
 	// send and get msg
 	socket.on('sendMessage', ({ sender, reciver, message }) => {
+		console.log(sender, reciver, message)
 		const user = getUser(reciver)
-		if (user) {
-			io.to(user.socketId).emit('getMessage', { senderId, message })
-		}
+
+		io.to(user.socketId).emit('getMessage', { senderId, message })
 	})
 
 	// when disconect
