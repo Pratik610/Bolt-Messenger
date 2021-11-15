@@ -21,7 +21,7 @@ const Chat = ({ user }) => {
 	reciver = reciver && reciver[0]
 
 	useEffect(() => {
-		socket.current = io()
+		socket.current = io('ws://localhost:5000')
 		socket.current.on('getMessage', (data) => {
 			console.log(data)
 		})
@@ -50,17 +50,17 @@ const Chat = ({ user }) => {
 
 	const send = (e) => {
 		e.preventDefault()
-		const reciverId = chats.users.find((u) => u._id !== user._id)
+		const reciver = chats.users.find((u) => u._id !== user._id)
 		setNewMsg({
 			sender: user._id,
 			message: msg,
 		})
 
-		// socket.current.emit('sendMessage', {
-		// 	sender: user._id,
-		// 	reciver,
-		// 	message: msg,
-		// })
+		socket.current.emit('sendMessage', {
+			sender: user._id,
+			reciver,
+			message: msg,
+		})
 		dispatch(sendMessageAction(chats.convoId, msg))
 	}
 

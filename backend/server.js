@@ -13,7 +13,12 @@ dotenv.config()
 connectDB()
 const app = express()
 const server = http.createServer(app)
-const io = new Server(server)
+const io = new Server(server, {
+	cors: {
+		origin: 'http://localhost:3000',
+	},
+	methods: ['GET', 'POST'],
+})
 
 app.use(json())
 app.use(cors())
@@ -24,27 +29,19 @@ app.use('/api/chat', chatRoutes)
 const __dirname = path.resolve()
 app.use('/images', express.static(path.join(__dirname, '/images')))
 
-if (process.env.ENVIRONMENT === 'production') {
-	app.use(express.static(path.join(__dirname, '/frontend/build')))
-
-	app.get('*', (req, res) =>
-		res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
-	)
-}
-
 let users = []
 
 const addUser = (userId, socketId) => {
-	users?.some((user) => user.userId === userId) &&
+	!users.some((user) => user.userId === userId) &&
 		users.push({ userId, socketId })
 }
 
 const removeUser = (socketId) => {
-	users = users?.find((user) => user.socketId !== socketId)
+	users = users.filter((user) => user.socketId !== socketId)
 }
 
 const getUser = (userId) => {
-	return users?.find((user) => user.userId === userId)
+	return users.find((user) => user.userId === userId)
 }
 
 io.on('connection', (socket) => {
@@ -73,10 +70,18 @@ io.on('connection', (socket) => {
 	})
 })
 
+if (process.env.ENVIRONMENT === 'production') {
+	app.use(express.static(path.join(__dirname, '/frontend/build')))
+
+	app.get('*', (req, res) =>
+		res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+	)
+}
+
 app.use(notFound)
 app.use(errorHandler)
 
 server.listen(
-	process.env.PORT,
+	process.env.PORT || 5000,
 	console.log(`Server Running on PORT ${process.env.PORT}`)
 )

@@ -55,13 +55,11 @@ const ChatScreen = ({ history, match }) => {
 	}, [newMsg])
 
 	useEffect(() => {
-		if (user) {
-			socket.current.emit('addUser', user._id)
-			socket.current.on('getUsers', (users) => {
-				console.log(users)
-			})
-		}
-	}, [user, socket])
+		socket.current.emit('addUser', userId._id)
+		socket.current.on('getUsers', (users) => {
+			console.log(users)
+		})
+	}, [userId, socket])
 
 	useEffect(() => {
 		if (chatMessages) {
