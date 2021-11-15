@@ -71,17 +71,17 @@ const ChatScreen = ({ history, match }) => {
 
 	const send = (e) => {
 		e.preventDefault()
-		const reciverId = chats.users.find((u) => u._id !== user._id)
+		const reciver = chats.users.find((u) => u._id !== user._id)
 		setNewMsg({
 			sender: user._id,
 			message: msg,
 		})
 
-		// socket.current.emit('sendMessage', {
-		// 	sender: user._id,
-		// 	reciver,
-		// 	message: msg,
-		// })
+		socket.current.emit('sendMessage', {
+			sender: user._id,
+			reciver,
+			message: msg,
+		})
 		dispatch(sendMessageAction(chats.convoId, msg))
 	}
 
@@ -151,30 +151,32 @@ const ChatScreen = ({ history, match }) => {
 										))}
 									<div ref={scrollRef}></div>
 								</div>
+								<div className='mb-5'></div>
+
+								<div
+									style={{ bottom: '0%', zIndex: '3' }}
+									className='position-fixed  p-2 w-100'>
+									<form className='form-inline' onSubmit={send}>
+										<div className='input-group mb-1'>
+											<input
+												type='text'
+												value={msg}
+												onChange={(e) => setMsg(e.target.value)}
+												className='form-control sendmsg'
+												aria-label="Recipient's username"
+												aria-describedby='button-addon2'
+											/>
+											<button
+												className='btn btn-outline-secondary'
+												type='submit'
+												id='button-addon2'>
+												<i className='fas ps-2 pe-2 fa-bolt'></i>
+											</button>
+										</div>
+									</form>
+								</div>
 							</>
 						)}
-						<div
-							style={{ bottom: '0%', zIndex: '3' }}
-							className='position-fixed  p-2 w-100'>
-							<form className='form-inline' onSubmit={send}>
-								<div className='input-group mb-1'>
-									<input
-										type='text'
-										value={msg}
-										onChange={(e) => setMsg(e.target.value)}
-										className='form-control sendmsg'
-										aria-label="Recipient's username"
-										aria-describedby='button-addon2'
-									/>
-									<button
-										className='btn btn-outline-secondary'
-										type='submit'
-										id='button-addon2'>
-										<i className='fas ps-2 pe-2 fa-bolt'></i>
-									</button>
-								</div>
-							</form>
-						</div>
 					</div>
 				</div>
 			</div>
