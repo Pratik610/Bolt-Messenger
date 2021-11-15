@@ -1,6 +1,7 @@
 import express, { json } from 'express'
 import { Server } from 'socket.io'
 import http from 'http'
+import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import { errorHandler, notFound } from './middleware/errorMiddleware.js'
@@ -15,6 +16,7 @@ const server = http.createServer(app)
 const io = new Server(server)
 
 app.use(json())
+app.use(cors())
 
 app.use('/api/user', userRoutes)
 app.use('/api/chat', chatRoutes)
@@ -33,16 +35,16 @@ if (process.env.ENVIRONMENT === 'production') {
 let users = []
 
 const addUser = (userId, socketId) => {
-	!users.some((user) => user.userId === userId) &&
+	users?.some((user) => user.userId === userId) &&
 		users.push({ userId, socketId })
 }
 
 const removeUser = (socketId) => {
-	users = users.find((user) => user.socketId !== socketId)
+	users = users?.find((user) => user.socketId !== socketId)
 }
 
 const getUser = (userId) => {
-	return users.find((user) => user.userId === userId)
+	return users?.find((user) => user.userId === userId)
 }
 
 io.on('connection', (socket) => {
