@@ -28,10 +28,7 @@ const Chat = ({ user }) => {
 
 	useEffect(() => {
 		socket.current.on('getMessage', (data) => {
-			setChatMessages([
-				...chatMessages,
-				{ sender: data.sender, message: data.message },
-			])
+			setNewMsg({ sender: data.sender, message: data.message })
 		})
 	}, [])
 
@@ -70,6 +67,7 @@ const Chat = ({ user }) => {
 			message: msg,
 		})
 		dispatch(sendMessageAction(chats.convoId, msg))
+		setMsg('')
 	}
 
 	return (
