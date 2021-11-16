@@ -40,7 +40,7 @@ const ChatScreen = ({ history, match }) => {
 	}, [dispatch, user, history, userId])
 
 	useEffect(() => {
-		socket.current = io()
+		socket.current = io('ws://localhost:5000')
 		socket.current.on('getMessage', (data) => {
 			console.log(data)
 		})

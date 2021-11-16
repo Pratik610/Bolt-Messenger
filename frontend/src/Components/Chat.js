@@ -21,9 +21,17 @@ const Chat = ({ user }) => {
 	reciver = reciver && reciver[0]
 
 	useEffect(() => {
-		socket.current = io('ws://localhost:5000')
+		socket.current = io('ws://localhost:5000', {
+			transports: ['websocket', 'polling'],
+		})
+	}, [])
+
+	useEffect(() => {
 		socket.current.on('getMessage', (data) => {
-			console.log(data)
+			setChatMessages([
+				...chatMessages,
+				{ sender: data.sender, message: data.message },
+			])
 		})
 	}, [])
 
@@ -58,7 +66,7 @@ const Chat = ({ user }) => {
 
 		socket.current.emit('sendMessage', {
 			sender: user._id,
-			reciver,
+			reciver: reciver._id,
 			message: msg,
 		})
 		dispatch(sendMessageAction(chats.convoId, msg))
