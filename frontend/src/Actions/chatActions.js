@@ -3,6 +3,9 @@ import {
 	GET_CHAT_FAIL,
 	GET_CHAT_REQUEST,
 	GET_CHAT_SUCCESS,
+	GET_STACK_FAIL,
+	GET_STACK_REQUEST,
+	GET_STACK_SUCCESS,
 	SEND_MSG_FAIL,
 	SEND_MSG_REQUEST,
 	SEND_MSG_SUCCESS,
@@ -83,3 +86,37 @@ export const sendMessageAction =
 			})
 		}
 	}
+
+export const getStackAction = () => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: GET_STACK_REQUEST,
+		})
+		const {
+			userLogin: { userId },
+		} = getState()
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${userId.tokken}`,
+			},
+		}
+
+		const { data } = await axios.get('/api/chat/getstack', config)
+
+		data &&
+			dispatch({
+				type: GET_STACK_SUCCESS,
+				payload: data,
+			})
+	} catch (error) {
+		dispatch({
+			type: GET_STACK_FAIL,
+			payload:
+				error.response && error.response.data.message
+					? error.response.data.message
+					: error.message,
+		})
+	}
+}

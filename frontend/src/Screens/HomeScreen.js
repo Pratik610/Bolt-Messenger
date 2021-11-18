@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserLoginInfo } from '../Actions/userActions'
+import { getStackAction, getChatAction } from '../Actions/chatActions'
 import Chat from '../Components/Chat'
 
 import Nav from '../Components/Nav'
@@ -16,14 +17,25 @@ const HomeScreen = ({ history }) => {
 	const userInfo = useSelector((state) => state.userInfo)
 	const { user } = userInfo
 
+	const getStack = useSelector((state) => state.getStack)
+	const { stack } = getStack
+
 	useEffect(() => {
 		if (!userId) {
 			history.push('/login')
 		}
-		if (!user) {
-			dispatch(getUserLoginInfo())
+
+		dispatch(getUserLoginInfo())
+		dispatch(getStackAction())
+	}, [dispatch, history, userId])
+
+	if (stack) {
+		for (let index = 0; index < stack.stack.length; index++) {
+			const temp = stack.stack[index].users.filter((u) => u !== user._id)
+
+			stack.stack[index]['user'] = stack.users.find((u) => u._id === temp[0])
 		}
-	}, [dispatch, user, history, userId])
+	}
 
 	return (
 		<>
@@ -38,32 +50,47 @@ const HomeScreen = ({ history }) => {
 								className='p-2  chats '
 								style={{ backgroundColor: '#00171F' }}>
 								<Search user={user} history={history} />
-								<div className='p-1 pb-2 border-bottom'>
-									<div className='mt-1  justify-content-between align-items-center ps-2 pe-2 d-flex'>
-										<div>
-											<img
-												src={user.profilePhoto}
-												alt=''
-												width='50'
-												referrerPolicy='no-referrer'
-												className='rounded-circle'
-											/>
-
-											<h6
-												style={{ fontSize: '1em', fontWeight: 'bold' }}
-												className='d-inline ms-3'>
-												Pratik
-											</h6>
+								{stack &&
+									stack.stack.map((stackMsg) => (
+										<div className='p-1 pb-2 border-bottom'>
+											<div
+												onClick={() =>
+													dispatch(getChatAction(stackMsg.user._id))
+												}
+												style={{ cursor: 'pointer' }}
+												className='mt-1  justify-content-between align-items-center ps-2 pe-2 d-flex'>
+												<div className='d-flex align-items-center'>
+													<img
+														src={stackMsg.user.profilePhoto}
+														alt=''
+														width='50'
+														referrerPolicy='no-referrer'
+														className='rounded-circle'
+													/>
+													<div className=' ms-3'>
+														<h6
+															className='mb-0 mt-1'
+															style={{ fontSize: '1em', fontWeight: 'bold' }}>
+															{stackMsg.user.name}
+														</h6>
+														<small
+															className='text-muted'
+															style={{ fontSize: '0.9em' }}>
+															{stackMsg.lastMessage && stackMsg.lastMessage}
+														</small>
+													</div>
+												</div>
+												<div>
+													<small
+														className='text-muted'
+														style={{ fontSize: '0.8em' }}>
+														{stackMsg.lastMessageTime &&
+															stackMsg.lastMessageTime.slice(0, 5)}
+													</small>
+												</div>
+											</div>
 										</div>
-										<div>
-											<small
-												className='text-muted'
-												style={{ fontSize: '0.8em' }}>
-												Yesterday
-											</small>
-										</div>
-									</div>
-								</div>
+									))}
 							</div>
 						</div>
 						{/* Chat */}

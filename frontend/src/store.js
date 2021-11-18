@@ -11,7 +11,11 @@ import {
 	acceptRequestReducer,
 } from './Reducers/userReducers.js'
 
-import { getChatReducer, sendMessageReducer } from './Reducers/chatReducers.js'
+import {
+	getChatReducer,
+	sendMessageReducer,
+	getStackReducer,
+} from './Reducers/chatReducers.js'
 
 const reducer = combineReducers({
 	userLogin: userLoginReducer,
@@ -23,6 +27,7 @@ const reducer = combineReducers({
 	acceptRequest: acceptRequestReducer,
 	getChat: getChatReducer,
 	sendMessage: sendMessageReducer,
+	getStack: getStackReducer,
 })
 
 const userId = localStorage.getItem('userId')

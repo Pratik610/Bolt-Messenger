@@ -81,6 +81,13 @@ i{
   height: 100% !important;
 }
 
+.bottomLeftRadius{
+  border-bottom-left-radius: 20px;
+}
+.bottomRightRadius{
+  border-bottom-right-radius: 20px !important;
+}
+
 
 .serach::placeholder{
   text-align: center;

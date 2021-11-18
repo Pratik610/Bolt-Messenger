@@ -23,12 +23,7 @@ const userSchema = new mongoose.Schema(
 				ref: 'User',
 			},
 		],
-		chatStack: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'Members',
-			},
-		],
+
 		pendingRequest: [
 			{
 				type: mongoose.Schema.Types.ObjectId,

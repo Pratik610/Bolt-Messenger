@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { sendMessageAction } from '../Actions/chatActions'
+import moment from 'moment-timezone'
 import { io } from 'socket.io-client'
 const Chat = ({ user }) => {
 	const [msg, setMsg] = useState('')
@@ -43,22 +44,25 @@ const Chat = ({ user }) => {
 	useEffect(() => {
 		socket.current.emit('addUser', user._id)
 		socket.current.on('getUsers', (users) => {
-			console.log(users)
+			// console.log(users)
 		})
 	}, [user, socket])
 
 	useEffect(() => {
 		if (chatMessages) {
-			scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+			scrollRef.current?.scrollIntoView()
 		}
 	}, [chatMessages])
 
 	const send = (e) => {
 		e.preventDefault()
 		const reciver = chats.users.find((u) => u._id !== user._id)
+		const d = new Date()
+
 		setNewMsg({
 			sender: user._id,
 			message: msg,
+			createdAt: d.toISOString(),
 		})
 
 		socket.current.emit('sendMessage', {
@@ -125,7 +129,7 @@ const Chat = ({ user }) => {
 						{/* ....... */}
 						<div
 							style={{ overflowY: 'scroll', height: '80%' }}
-							className='ps-md-3 pe-md-3  '>
+							className='ps-md-3 pe-md-3 p-2  '>
 							{chatMessages &&
 								chatMessages.map((msg) => (
 									<div key={msg._id}>
@@ -134,14 +138,36 @@ const Chat = ({ user }) => {
 												user._id === msg.sender && 'justify-content-end'
 											}`}>
 											<p
-												className=' mb-1  p-2'
+												className={` mb-1 ps-3 pe-3  p-2 ${
+													user._id === msg.sender
+														? 'bottomLeftRadius'
+														: 'bottomRightRadius'
+												}`}
 												style={{
 													maxWidth: '75%',
 													wordWrap: 'break-word',
 													backgroundColor: '#47489E',
-													borderRadius: '20px',
+													borderTopLeftRadius: '20px',
+													borderTopRightRadius: '20px',
 												}}>
-												<span>{msg.message}</span>
+												<span
+													style={{ lineHeight: '' }}
+													className='d-inline-block pb-0 mb-0'>
+													{msg.message}
+												</span>
+												<span
+													className=' d-inline-block  ms-2  '
+													style={{
+														marginBottom: '-5px',
+														fontSize: '0.6em',
+														lineHeight: '0.2em',
+													}}>
+													{/* {msg.createdAt && msg.createdAt.slice(11, 16)} */}
+													{moment
+														.tz(`${msg.createdAt}`, 'Asia/Kolkata')
+														.format()
+														.slice(11, 16)}
+												</span>
 											</p>
 										</div>
 									</div>
@@ -164,6 +190,7 @@ const Chat = ({ user }) => {
 									<button
 										className='btn btn-outline-secondary'
 										type='submit'
+										disabled={msg === '' ? true : false}
 										id='button-addon2'>
 										<i className='fas ps-2 pe-2 fa-bolt'></i>
 									</button>

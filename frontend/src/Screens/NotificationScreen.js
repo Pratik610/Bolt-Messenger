@@ -7,6 +7,7 @@ import {
 } from '../Actions/userActions'
 import { Link } from 'react-router-dom'
 import Loader from '../Components/Loader'
+import Chat from '../Components/Chat'
 
 const NotificationScreen = ({ history }) => {
 	const dispatch = useDispatch()
@@ -24,11 +25,13 @@ const NotificationScreen = ({ history }) => {
 	const { accept } = acceptRequest
 
 	useEffect(() => {
-		if (!user) {
+		if (!userId) {
+			history.push('/login')
+		} else {
 			dispatch(getUserLoginInfo())
+			dispatch(getPendingAction())
 		}
-		dispatch(getPendingAction())
-	}, [dispatch, userId, user, history, accept])
+	}, [dispatch, userId, history, accept])
 
 	return (
 		<>
@@ -92,7 +95,11 @@ const NotificationScreen = ({ history }) => {
 								<p className='heading-2 mt-5 text-center'>0 Notification</p>
 							)}
 						</div>
-						<div className='d-none d-lg-block chats col-lg-8 border'></div>
+						{/* Chat */}
+
+						<Chat user={user} />
+
+						{/* /Chat / */}
 					</div>
 				</div>
 			)}

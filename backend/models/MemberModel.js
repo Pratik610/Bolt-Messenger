@@ -8,6 +8,12 @@ const membersSchema = new mongoose.Schema(
 				ref: 'User',
 			},
 		],
+		lastMessageTime: {
+			type: String,
+		},
+		lastMessage: {
+			type: 'String',
+		},
 	},
 	{
 		timestamps: true,
