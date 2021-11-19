@@ -2,17 +2,17 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { sendMessageAction } from '../Actions/chatActions'
 import moment from 'moment-timezone'
-import { io } from 'socket.io-client'
-const Chat = ({ user, show, setShow }) => {
+
+const Chat = ({ socket, user, show, setShow }) => {
 	const [msg, setMsg] = useState('')
 	const [chatMessages, setChatMessages] = useState([])
 	const [newMsg, setNewMsg] = useState(false)
 	const scrollRef = useRef()
-	const socket = useRef()
+
 	const dispatch = useDispatch()
 
 	const getChat = useSelector((state) => state.getChat)
-	const { chats } = getChat
+	const { chats, loading } = getChat
 
 	const date = new Date()
 	let reciver =
@@ -21,12 +21,6 @@ const Chat = ({ user, show, setShow }) => {
 			return id._id !== user._id
 		})
 	reciver = reciver && reciver[0]
-
-	useEffect(() => {
-		socket.current = io('ws://localhost:5000', {
-			transports: ['websocket', 'polling'],
-		})
-	}, [])
 
 	useEffect(() => {
 		socket.current.on('getMessage', (data) => {
@@ -45,13 +39,6 @@ const Chat = ({ user, show, setShow }) => {
 	useEffect(() => {
 		newMsg && setChatMessages([...chatMessages, newMsg])
 	}, [newMsg])
-
-	useEffect(() => {
-		socket.current.emit('addUser', user._id)
-		socket.current.on('getUsers', (users) => {
-			// console.log(users)
-		})
-	}, [user, socket])
 
 	useEffect(() => {
 		if (chatMessages) {
@@ -85,7 +72,7 @@ const Chat = ({ user, show, setShow }) => {
 				className={`p-0 chats d-md-block col-12 col-lg-8 position-relative ${
 					!show && 'd-none'
 				} `}>
-				{!chats && (
+				{!chats && !loading && (
 					<div className='d-flex pb-5 justify-content-center h-100 align-items-center'>
 						<div>
 							<i
@@ -151,13 +138,12 @@ const Chat = ({ user, show, setShow }) => {
 											<p
 												className={` mb-1 ps-3 pe-3  p-2 ${
 													user._id === msg.sender
-														? 'bottomLeftRadius'
-														: 'bottomRightRadius'
+														? 'bottomLeftRadius bg-sender'
+														: 'bottomRightRadius bg-reciver '
 												}`}
 												style={{
 													maxWidth: '75%',
 													wordWrap: 'break-word',
-													backgroundColor: '#47489E',
 													borderTopLeftRadius: '20px',
 													borderTopRightRadius: '20px',
 												}}>

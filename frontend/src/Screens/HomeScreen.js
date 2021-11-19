@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserLoginInfo } from '../Actions/userActions'
 import { getStackAction, getChatAction } from '../Actions/chatActions'
 import Chat from '../Components/Chat'
-
+import { io } from 'socket.io-client'
 import Nav from '../Components/Nav'
 
 import Search from '../Components/Search'
@@ -21,6 +21,8 @@ const HomeScreen = ({ history }) => {
 	const getStack = useSelector((state) => state.getStack)
 	const { stack } = getStack
 
+	const socket = useRef()
+
 	useEffect(() => {
 		if (!userId) {
 			history.push('/login')
@@ -29,6 +31,21 @@ const HomeScreen = ({ history }) => {
 		dispatch(getUserLoginInfo())
 		dispatch(getStackAction())
 	}, [dispatch, history, userId])
+
+	useEffect(() => {
+		socket.current = io('ws://localhost:5000', {
+			transports: ['websocket', 'polling'],
+		})
+	}, [])
+
+	useEffect(() => {
+		if (user) {
+			socket.current.emit('addUser', user._id)
+		}
+		socket.current.on('getUsers', (users) => {
+			console.log(users)
+		})
+	}, [user, socket])
 
 	if (stack) {
 		for (let index = 0; index < stack.stack.length; index++) {
@@ -89,7 +106,7 @@ const HomeScreen = ({ history }) => {
 															className='text-muted'
 															style={{ fontSize: '0.8em' }}>
 															{stackMsg.lastMessageTime &&
-																stackMsg.lastMessageTime.slice(0, 5)}
+																stackMsg.lastMessageTime.slice(15, 21)}
 														</small>
 													</div>
 												</div>
@@ -129,7 +146,7 @@ const HomeScreen = ({ history }) => {
 															className='text-muted'
 															style={{ fontSize: '0.8em' }}>
 															{stackMsg.lastMessageTime &&
-																stackMsg.lastMessageTime.slice(0, 5)}
+																stackMsg.lastMessageTime.slice(15, 21)}
 														</small>
 													</div>
 												</div>
@@ -140,7 +157,7 @@ const HomeScreen = ({ history }) => {
 						</div>
 						{/* Chat */}
 
-						<Chat user={user} show={show} setShow={setShow} />
+						<Chat socket={socket} user={user} show={show} setShow={setShow} />
 
 						{/* /Chat / */}
 					</div>

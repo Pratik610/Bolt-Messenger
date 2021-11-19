@@ -88,6 +88,13 @@ i{
   border-bottom-right-radius: 20px !important;
 }
 
+.bg-sender{
+  	background-color: #313379;
+}
+.bg-reciver{
+  	background-color: #404044;
+}
+
 
 .serach::placeholder{
   text-align: center;

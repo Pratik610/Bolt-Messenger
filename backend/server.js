@@ -63,6 +63,19 @@ io.on('connection', (socket) => {
 		}
 	})
 
+	//  call User request
+	socket.on('callUser', ({ reciver, signalData, user }) => {
+		const userToCall = getUser(reciver)
+		if (userToCall) {
+			io.to(userToCall.socketId).emit('callUser', { signalData, user })
+		}
+	})
+
+	// answer call
+	socket.on('answerCall', (data) => {
+		io.to(data.to).emit('callAccepted', data.signalData)
+	})
+
 	// when disconect
 	socket.on('disconnect', () => {
 		console.log('user Disconnected')
