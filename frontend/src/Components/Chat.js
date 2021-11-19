@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { sendMessageAction } from '../Actions/chatActions'
 import moment from 'moment-timezone'
 import { io } from 'socket.io-client'
-const Chat = ({ user }) => {
+const Chat = ({ user, show, setShow }) => {
 	const [msg, setMsg] = useState('')
 	const [chatMessages, setChatMessages] = useState([])
 	const [newMsg, setNewMsg] = useState(false)
@@ -14,6 +14,7 @@ const Chat = ({ user }) => {
 	const getChat = useSelector((state) => state.getChat)
 	const { chats } = getChat
 
+	const date = new Date()
 	let reciver =
 		chats &&
 		chats.users.filter((id) => {
@@ -29,7 +30,11 @@ const Chat = ({ user }) => {
 
 	useEffect(() => {
 		socket.current.on('getMessage', (data) => {
-			setNewMsg({ sender: data.sender, message: data.message })
+			setNewMsg({
+				sender: data.sender,
+				message: data.message,
+				createdAt: date.toISOString(),
+			})
 		})
 	}, [])
 
@@ -57,12 +62,11 @@ const Chat = ({ user }) => {
 	const send = (e) => {
 		e.preventDefault()
 		const reciver = chats.users.find((u) => u._id !== user._id)
-		const d = new Date()
 
 		setNewMsg({
 			sender: user._id,
 			message: msg,
-			createdAt: d.toISOString(),
+			createdAt: date.toISOString(),
 		})
 
 		socket.current.emit('sendMessage', {
@@ -78,7 +82,9 @@ const Chat = ({ user }) => {
 		<>
 			<div
 				style={{ borderRadius: '15px' }}
-				className='d-none d-md-block p-0 chats col-12 col-lg-8 position-relative '>
+				className={`p-0 chats d-md-block col-12 col-lg-8 position-relative ${
+					!show && 'd-none'
+				} `}>
 				{!chats && (
 					<div className='d-flex pb-5 justify-content-center h-100 align-items-center'>
 						<div>
@@ -95,21 +101,26 @@ const Chat = ({ user }) => {
 
 				{chats && (
 					<>
-						{/* ..... */}
+						{/* ..pc... */}
 
 						<div
 							id='msg'
 							style={{ position: 'sticky', top: '0%' }}
-							className='d-flex nav  w-100  justify-content-between ps-4 pe-4  align-items-center p-3'>
+							className='d-flex nav  w-100  justify-content-between ps-3 pe-4  align-items-center p-3'>
 							<div>
-								{' '}
-								<img
-									src={reciver.profilePhoto}
-									alt=''
-									width='40'
-									referrerPolicy='no-referrer'
-									className='rounded-circle'
-								/>
+								<div className='d-inline-block' onClick={() => setShow(false)}>
+									<div className='pe-3 d-inline-block d-md-none'>
+										<i className='fas fa-angle-left '></i>
+									</div>
+									<img
+										src={reciver.profilePhoto}
+										alt=''
+										width='40'
+										referrerPolicy='no-referrer'
+										className='rounded-circle '
+									/>
+								</div>
+
 								<h6
 									style={{ fontSize: '1em', fontWeight: 'bold' }}
 									className='d-inline ms-3'>
@@ -197,6 +208,7 @@ const Chat = ({ user }) => {
 								</div>
 							</form>
 						</div>
+						{/* pc ends */}
 					</>
 				)}
 			</div>

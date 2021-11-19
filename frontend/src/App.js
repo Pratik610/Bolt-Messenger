@@ -9,7 +9,7 @@ function App() {
 		<Router>
 			<Route path='/' exact component={HomeScreen} />
 			<Route path='/login' component={LoginScreen} />
-			{/* <Route path='/chat/:id' component={ChatScreen} /> */}
+			{/* <Route path='/chat' component={ChatScreen} /> */}
 			<Route path='/notification' component={NotificationScreen} />
 		</Router>
 	)
