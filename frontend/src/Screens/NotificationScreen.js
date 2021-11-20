@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
 	getUserLoginInfo,
@@ -8,8 +8,15 @@ import {
 import { Link } from 'react-router-dom'
 import Loader from '../Components/Loader'
 import Chat from '../Components/Chat'
+import { useHistory } from 'react-router'
+import { SocketContext } from '../socket'
 
-const NotificationScreen = ({ history }) => {
+const NotificationScreen = () => {
+	const socket = useContext(SocketContext)
+	const history = useHistory()
+
+	const [onlineUsers, setOnlineUsers] = useState([])
+
 	const dispatch = useDispatch()
 
 	const userLogin = useSelector((state) => state.userLogin)
@@ -32,6 +39,15 @@ const NotificationScreen = ({ history }) => {
 			dispatch(getPendingAction())
 		}
 	}, [dispatch, userId, history, accept])
+
+	useEffect(() => {
+		if (user) {
+			socket.emit('addUser', user._id)
+		}
+		socket.on('getUsers', (users) => {
+			setOnlineUsers(users)
+		})
+	}, [user, socket])
 
 	return (
 		<>
@@ -97,7 +113,12 @@ const NotificationScreen = ({ history }) => {
 						</div>
 						{/* Chat */}
 
-						<Chat user={user} />
+						<Chat
+							displayNone={true}
+							onlineUsers={onlineUsers}
+							socket={socket}
+							user={user}
+						/>
 
 						{/* /Chat / */}
 					</div>

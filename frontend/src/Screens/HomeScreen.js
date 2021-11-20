@@ -1,15 +1,20 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserLoginInfo } from '../Actions/userActions'
 import { getStackAction, getChatAction } from '../Actions/chatActions'
 import Chat from '../Components/Chat'
-import { io } from 'socket.io-client'
 import Nav from '../Components/Nav'
-
 import Search from '../Components/Search'
+import { useHistory } from 'react-router'
+import { SocketContext } from '../socket'
 
-const HomeScreen = ({ history }) => {
+const HomeScreen = () => {
+	const socket = useContext(SocketContext)
+	const history = useHistory()
+
 	const [show, setShow] = useState(false)
+	const [onlineUsers, setOnlineUsers] = useState([])
+
 	const dispatch = useDispatch()
 
 	const userLogin = useSelector((state) => state.userLogin)
@@ -21,7 +26,8 @@ const HomeScreen = ({ history }) => {
 	const getStack = useSelector((state) => state.getStack)
 	const { stack } = getStack
 
-	const socket = useRef()
+	const searchUser = useSelector((state) => state.searchUser)
+	const { searched } = searchUser
 
 	useEffect(() => {
 		if (!userId) {
@@ -33,18 +39,14 @@ const HomeScreen = ({ history }) => {
 	}, [dispatch, history, userId])
 
 	useEffect(() => {
-		socket.current = io('ws://localhost:5000', {
-			transports: ['websocket', 'polling'],
-		})
-	}, [])
-
-	useEffect(() => {
-		if (user) {
-			socket.current.emit('addUser', user._id)
+		if (socket) {
+			if (user) {
+				socket.emit('addUser', user._id)
+			}
+			socket.on('getUsers', (users) => {
+				setOnlineUsers(users)
+			})
 		}
-		socket.current.on('getUsers', (users) => {
-			console.log(users)
-		})
 	}, [user, socket])
 
 	if (stack) {
@@ -69,10 +71,12 @@ const HomeScreen = ({ history }) => {
 							<div
 								className='p-2  chats '
 								style={{ backgroundColor: '#00171F' }}>
-								<Search user={user} history={history} />
+								<Search user={user} setShow={setShow} />
 								{stack &&
 									stack.stack.map((stackMsg) => (
-										<div key={stackMsg._id}>
+										<div
+											key={stackMsg._id}
+											className={`${searched && 'd-none'}`}>
 											<div className='p-1 d-none d-md-block pb-2 border-bottom'>
 												<div
 													onClick={() =>
@@ -157,7 +161,13 @@ const HomeScreen = ({ history }) => {
 						</div>
 						{/* Chat */}
 
-						<Chat socket={socket} user={user} show={show} setShow={setShow} />
+						<Chat
+							socket={socket}
+							onlineUsers={onlineUsers}
+							user={user}
+							show={show}
+							setShow={setShow}
+						/>
 
 						{/* /Chat / */}
 					</div>

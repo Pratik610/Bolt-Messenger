@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { sendMessageAction } from '../Actions/chatActions'
 import moment from 'moment-timezone'
 
-const Chat = ({ socket, user, show, setShow }) => {
+const Chat = ({ socket, user, show, setShow, displayNone, onlineUsers }) => {
 	const [msg, setMsg] = useState('')
 	const [chatMessages, setChatMessages] = useState([])
 	const [newMsg, setNewMsg] = useState(false)
@@ -23,7 +23,7 @@ const Chat = ({ socket, user, show, setShow }) => {
 	reciver = reciver && reciver[0]
 
 	useEffect(() => {
-		socket.current.on('getMessage', (data) => {
+		socket.on('getMessage', (data) => {
 			setNewMsg({
 				sender: data.sender,
 				message: data.message,
@@ -56,7 +56,7 @@ const Chat = ({ socket, user, show, setShow }) => {
 			createdAt: date.toISOString(),
 		})
 
-		socket.current.emit('sendMessage', {
+		socket.emit('sendMessage', {
 			sender: user._id,
 			reciver: reciver._id,
 			message: msg,
@@ -69,9 +69,9 @@ const Chat = ({ socket, user, show, setShow }) => {
 		<>
 			<div
 				style={{ borderRadius: '15px' }}
-				className={`p-0 chats d-md-block col-12 col-lg-8 position-relative ${
+				className={`p-0 chats  d-md-block col-12 col-lg-8 position-relative ${
 					!show && 'd-none'
-				} `}>
+				} ${displayNone && 'd-none'} `}>
 				{!chats && !loading && (
 					<div className='d-flex pb-5 justify-content-center h-100 align-items-center'>
 						<div>
@@ -94,8 +94,8 @@ const Chat = ({ socket, user, show, setShow }) => {
 							id='msg'
 							style={{ position: 'sticky', top: '0%' }}
 							className='d-flex nav  w-100  justify-content-between ps-3 pe-4  align-items-center p-3'>
-							<div>
-								<div className='d-inline-block' onClick={() => setShow(false)}>
+							<div className='d-flex align-items-center'>
+								<div className='' onClick={() => setShow(false)}>
 									<div className='pe-3 d-inline-block d-md-none'>
 										<i className='fas fa-angle-left '></i>
 									</div>
@@ -107,12 +107,16 @@ const Chat = ({ socket, user, show, setShow }) => {
 										className='rounded-circle '
 									/>
 								</div>
-
-								<h6
-									style={{ fontSize: '1em', fontWeight: 'bold' }}
-									className='d-inline ms-3'>
-									{reciver.name}
-								</h6>
+								<div className=' ms-3'>
+									<h6
+										style={{ fontSize: '1em', fontWeight: 'bold' }}
+										className='d-inline mb-0 '>
+										{reciver.name}
+									</h6>
+									{onlineUsers.find((u) => u.userId === reciver._id) && (
+										<small className='d-block'>online</small>
+									)}
+								</div>
 							</div>
 							<div>
 								<div className='me-4 d-inline'>

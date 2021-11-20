@@ -9,7 +9,7 @@ import {
 import { getChatAction } from '../Actions/chatActions.js'
 import Loader from './Loader'
 
-const Search = ({ user, history }) => {
+const Search = ({ user, setShow }) => {
 	const dispatch = useDispatch()
 
 	const [name, setName] = useState('')
@@ -54,7 +54,7 @@ const Search = ({ user, history }) => {
 					(searchedUser) =>
 						searchedUser._id !== user._id && (
 							<div key={searchedUser._id}>
-								<div className='p-1 d-none d-md-block pb-2 border-bottom'>
+								<div className='p-1 pb-2 border-bottom'>
 									<div className='mt-1  justify-content-between align-items-center ps-2 pe-2 d-flex'>
 										<div>
 											<img
@@ -74,9 +74,10 @@ const Search = ({ user, history }) => {
 										{user.friends.find((id) => id === searchedUser._id) ? (
 											<i
 												className='fas h5 fa-comment-alt'
-												onClick={() =>
+												onClick={() => {
 													dispatch(getChatAction(searchedUser._id))
-												}></i>
+													setShow(true)
+												}}></i>
 										) : (
 											<div>
 												{searchedUser.pendingRequest.find(
