@@ -22,39 +22,44 @@ const CallScreen = () => {
 				audio: true,
 			})
 			.then((currentStream) => {
-				setStream(stream)
+				setStream(currentStream)
 				myVideo.current.srcObject = currentStream
+
+				const peer = new Peer({
+					initiator: callData.callerId === user._id ? true : false,
+					wrtc: wrtc,
+					trickle: false,
+					stream: currentStream,
+				})
+
+				peer.on('signal', (data) => {
+					socket.emit('onGoingCall', {
+						to: callData.callerInfo._id,
+						signal: data,
+					})
+					console.log(data)
+				})
+
+				peer.on('error', (err) => {
+					console.log(err)
+				})
+
+				peer.on('stream', (Stream) => {
+					userVideo.current.srcObject = Stream
+					console.log(Stream)
+				})
+
+				socket.on('onGoingCall', ({ signal }) => {
+					peer.signal(signal)
+					console.log(signal)
+				})
 			})
-	})
+			.catch((error) => console.log(error))
+	}, [])
 
-	useEffect(() => {
-		// ........
-
-		const peer = new Peer({
-			initiator: callData.callerId === user._id ? true : false,
-			wrtc: wrtc,
-			trickle: false,
-			stream,
-		})
-
-		peer.on('signal', (data) => {
-			socket.emit('onGoingCall', {
-				to: callData.callerId,
-				signal: data,
-			})
-			console.log(data, user.name)
-		})
-
-		peer.on('stream', (currentStream) => {
-			userVideo.current.srcObject = currentStream
-			console.log('seting stream')
-		})
-
-		socket.on('onGoingCall', ({ signal }) => {
-			peer.signal(signal)
-			console.log(signal)
-		})
-	})
+	// useEffect(() => {
+	// 	// ........
+	// }, [])
 
 	return (
 		<div
@@ -71,21 +76,22 @@ const CallScreen = () => {
 				<video
 					style={{ width: '100%', height: '100%', objectFit: 'cover' }}
 					playsInline
-					muted
 					ref={userVideo}
 					autoPlay
+					muted
 					className=''
 				/>
+
 				<div
 					className='position-absolute  myvideo border'
 					style={{ bottom: '0%', right: '0%' }}>
 					{' '}
 					<video
-						style={{}}
+						style={{ objectFit: 'cover' }}
 						playsInline
-						muted
 						ref={myVideo}
 						autoPlay
+						muted
 						className='w-100 h-100'></video>
 				</div>
 			</div>

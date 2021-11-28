@@ -75,7 +75,6 @@ io.on('connection', (socket) => {
 
 	// answer call
 	socket.on('answerCall', ({ reciver, user, caller }) => {
-		console.log(caller)
 		const userTo = getUser(reciver)
 		if (userTo) {
 			io.to(userTo.socketId).emit('callAccepted', { caller, user })
