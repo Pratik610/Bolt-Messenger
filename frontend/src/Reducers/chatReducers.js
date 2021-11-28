@@ -8,6 +8,8 @@ import {
 	SEND_MSG_FAIL,
 	SEND_MSG_REQUEST,
 	SEND_MSG_SUCCESS,
+	CALL_USER_DATA,
+	CALL_USER_RESET,
 } from '../Constants/chatConstants.js'
 
 export const getChatReducer = (state = {}, action) => {
@@ -44,6 +46,18 @@ export const getStackReducer = (state = {}, action) => {
 			return { loading: false, stack: action.payload }
 		case GET_STACK_FAIL:
 			return { loading: false, error: action.payload }
+		default:
+			return state
+	}
+}
+
+export const callUserReducer = (state = {}, action) => {
+	switch (action.type) {
+		case CALL_USER_DATA:
+			return { loading: false, callData: action.payload }
+		case CALL_USER_RESET:
+			return {}
+
 		default:
 			return state
 	}

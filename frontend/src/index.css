@@ -99,11 +99,50 @@ i{
 .serach::placeholder{
   text-align: center;
 }
+.main-noti{
+  background-color: rgba(134, 145, 150, 0.5);
+  width: 100%;
+  height: 100%;
+  z-index: 6;
+  position: absolute;
+}
+.userCall{
+  transform: translate(-50% );
+}
+
+.callNotification{
+position: relative;
+top: 10%;
+left: 50%;
+width: 30%;
+
+transform: translate(-50% );
+}
+
+.myvideo{
+  height: 30%;
+  width: 20%;
+}
+.controls{
+  width: 50%;
+}
 
  @media only screen and (max-width:600px) {
         body{
            background-image: none;
           background-size: cover;
+        }
+        .callNotification{
+          width: 100%;
+          left: 0%;
+          transform: translate(0% );
+        }
+        .myvideo{
+          height: 20%;
+          width: 25%;
+        }
+        .controls{
+          width: 75%;
         }
        
       

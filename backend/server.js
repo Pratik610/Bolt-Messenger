@@ -64,16 +64,30 @@ io.on('connection', (socket) => {
 	})
 
 	//  call User request
-	socket.on('callUser', ({ reciver, signalData, user }) => {
+	socket.on('callUser', ({ reciver, user, caller }) => {
+		console.log(caller)
 		const userToCall = getUser(reciver)
+
 		if (userToCall) {
-			io.to(userToCall.socketId).emit('callUser', { signalData, user })
+			io.to(userToCall.socketId).emit('callUser', { caller, user })
 		}
 	})
 
 	// answer call
-	socket.on('answerCall', (data) => {
-		io.to(data.to).emit('callAccepted', data.signalData)
+	socket.on('answerCall', ({ reciver, user, caller }) => {
+		console.log(caller)
+		const userTo = getUser(reciver)
+		if (userTo) {
+			io.to(userTo.socketId).emit('callAccepted', { caller, user })
+		}
+	})
+
+	// ongoing call
+	socket.on('onGoingCall', ({ to, signal }) => {
+		const userTo = getUser(to)
+		if (userTo) {
+			io.to(userTo.socketId).emit('onGoingCall', { signal })
+		}
 	})
 
 	// when disconect

@@ -3,7 +3,15 @@ import { useSelector, useDispatch } from 'react-redux'
 import { sendMessageAction } from '../Actions/chatActions'
 import moment from 'moment-timezone'
 
-const Chat = ({ socket, user, show, setShow, displayNone, onlineUsers }) => {
+const Chat = ({
+	socket,
+	user,
+	show,
+	setShow,
+	displayNone,
+	onlineUsers,
+	setOutgoing,
+}) => {
 	const [msg, setMsg] = useState('')
 	const [chatMessages, setChatMessages] = useState([])
 	const [newMsg, setNewMsg] = useState(false)
@@ -45,6 +53,11 @@ const Chat = ({ socket, user, show, setShow, displayNone, onlineUsers }) => {
 			scrollRef.current?.scrollIntoView()
 		}
 	}, [chatMessages])
+
+	const callUser = () => {
+		socket.emit('callUser', { reciver: reciver._id, user, caller: user._id })
+		setOutgoing({ callingUser: reciver, active: true })
+	}
 
 	const send = (e) => {
 		e.preventDefault()
@@ -119,11 +132,8 @@ const Chat = ({ socket, user, show, setShow, displayNone, onlineUsers }) => {
 								</div>
 							</div>
 							<div>
-								<div className='me-4 d-inline'>
-									<i className='fas fa-phone'></i>
-								</div>
-								<div className=' ms-4 d-inline'>
-									<i className='fas fa-video'></i>
+								<div className='me-3 d-inline'>
+									<i onClick={callUser} className='fas fa-phone'></i>
 								</div>
 							</div>
 						</div>
@@ -189,7 +199,7 @@ const Chat = ({ socket, user, show, setShow, displayNone, onlineUsers }) => {
 										aria-describedby='button-addon2'
 									/>
 									<button
-										className='btn btn-outline-secondary'
+										className='btn btn-success'
 										type='submit'
 										disabled={msg === '' ? true : false}
 										id='button-addon2'>

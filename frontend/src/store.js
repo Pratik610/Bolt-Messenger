@@ -15,6 +15,7 @@ import {
 	getChatReducer,
 	sendMessageReducer,
 	getStackReducer,
+	callUserReducer,
 } from './Reducers/chatReducers.js'
 
 const reducer = combineReducers({
@@ -28,6 +29,7 @@ const reducer = combineReducers({
 	getChat: getChatReducer,
 	sendMessage: sendMessageReducer,
 	getStack: getStackReducer,
+	callUser: callUserReducer,
 })
 
 const userId = localStorage.getItem('userId')
