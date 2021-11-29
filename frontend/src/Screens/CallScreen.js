@@ -5,7 +5,7 @@ import { SocketContext } from '../socket'
 import { useSelector } from 'react-redux'
 const CallScreen = () => {
 	const socket = useContext(SocketContext)
-	const [stream, setStream] = useState(null)
+	// const [stream, setStream] = useState(null)
 	const myVideo = useRef()
 	const userVideo = useRef()
 
@@ -22,8 +22,10 @@ const CallScreen = () => {
 				audio: true,
 			})
 			.then((currentStream) => {
-				setStream(currentStream)
+				// setStream(currentStream)
 				myVideo.current.srcObject = currentStream
+
+				console.log(currentStream)
 
 				const peer = new Peer({
 					initiator: callData.callerId === user._id ? true : false,
@@ -44,9 +46,10 @@ const CallScreen = () => {
 					console.log(err)
 				})
 
-				peer.on('stream', (Stream) => {
-					userVideo.current.srcObject = Stream
-					console.log(Stream)
+				peer.on('stream', (stream) => {
+					userVideo.current.srcObject = stream
+					console.log(stream)
+					console.log(userVideo)
 				})
 
 				socket.on('onGoingCall', ({ signal }) => {
@@ -55,7 +58,7 @@ const CallScreen = () => {
 				})
 			})
 			.catch((error) => console.log(error))
-	}, [])
+	}, [socket])
 
 	// useEffect(() => {
 	// 	// ........
@@ -78,7 +81,6 @@ const CallScreen = () => {
 					playsInline
 					ref={userVideo}
 					autoPlay
-					muted
 					className=''
 				/>
 
