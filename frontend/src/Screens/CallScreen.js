@@ -119,7 +119,7 @@ const CallScreen = () => {
 			className=' w-100  p-md-2'>
 			<div
 				className='position-relative userCall   w-100  '
-				style={{ height: '90%', left: '50%' }}>
+				style={{ height: '100%', left: '50%' }}>
 				<video
 					style={{ width: '100%', height: '100%', objectFit: 'cover' }}
 					playsInline
@@ -129,34 +129,36 @@ const CallScreen = () => {
 				/>
 
 				<div
-					className='position-absolute  myvideo border'
-					style={{ bottom: '0%', right: '0%' }}>
-					{' '}
+					className='position-absolute  myvideo'
+					style={{ top: '0%', right: '0%' }}>
 					<video
-						style={{ objectFit: 'cover' }}
+						style={{ objectFit: 'cover', borderRadius: '10px' }}
 						playsInline
 						ref={myVideo}
 						autoPlay
 						muted
 						className='w-100 h-100'></video>
 				</div>
-			</div>
-			<div className='mx-auto controls  border d-flex align-content-center justify-content-around pt-2'>
-				<button
-					className='btn h5 btn-dark rounded-circle'
-					onClick={() => {
-						toggleMic()
-					}}>
-					<i className='fas fa-microphone-slash'></i>
-				</button>
-				<button className='btn h5 btn-danger rounded-circle' onClick={endCall}>
-					<i className='fas fa-bolt'></i>
-				</button>
-				<button
-					className='btn h5  btn-dark rounded-circle'
-					onClick={toggleVideo}>
-					<i className='fas fa-video-slash'></i>
-				</button>
+
+				<div className='mx-auto position-absolute  controls   d-flex align-content-center justify-content-around pt-2'>
+					<button
+						className='btn h5 btn-dark rounded-circle'
+						onClick={() => {
+							toggleMic()
+						}}>
+						<i className='fas fa-microphone-slash'></i>
+					</button>
+					<button
+						className='btn h5 btn-danger rounded-circle'
+						onClick={endCall}>
+						<i className='fas fa-bolt'></i>
+					</button>
+					<button
+						className='btn h5  btn-dark rounded-circle'
+						onClick={toggleVideo}>
+						<i className='fas fa-video-slash'></i>
+					</button>
+				</div>
 			</div>
 		</div>
 	)
