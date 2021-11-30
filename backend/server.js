@@ -65,7 +65,6 @@ io.on('connection', (socket) => {
 
 	//  call User request
 	socket.on('callUser', ({ reciver, user, caller }) => {
-		console.log(caller)
 		const userToCall = getUser(reciver)
 
 		if (userToCall) {
@@ -86,6 +85,15 @@ io.on('connection', (socket) => {
 		const userTo = getUser(to)
 		if (userTo) {
 			io.to(userTo.socketId).emit('onGoingCall', { signal })
+		}
+	})
+
+	// call End
+	socket.on('endCall', ({ reciver }) => {
+		console.log(reciver)
+		const userTo = getUser(reciver)
+		if (userTo) {
+			io.to(userTo.socketId).emit('endCall')
 		}
 	})
 
