@@ -116,7 +116,7 @@ const HomeScreen = () => {
 														}
 														style={{ cursor: 'pointer' }}
 														className='mt-1  justify-content-between align-items-center ps-2 pe-2 d-flex'>
-														<div className='d-flex align-items-center'>
+														<div className='d-flex align-items-center col-11'>
 															<img
 																src={stackMsg.user.profilePhoto}
 																alt=''
@@ -124,7 +124,7 @@ const HomeScreen = () => {
 																referrerPolicy='no-referrer'
 																className='rounded-circle'
 															/>
-															<div className=' ms-3'>
+															<div className=' ms-3 col-10'>
 																<h6
 																	className='mb-0 mt-1'
 																	style={{
@@ -133,11 +133,16 @@ const HomeScreen = () => {
 																	}}>
 																	{stackMsg.user.name}
 																</h6>
-																<small
-																	className='text-muted'
-																	style={{ fontSize: '0.9em' }}>
+																<p
+																	className='text-muted mb-0'
+																	style={{
+																		fontSize: '0.9em',
+																		whiteSpace: 'nowrap',
+																		overflow: 'hidden',
+																		textOverflow: 'ellipsis',
+																	}}>
 																	{stackMsg.lastMessage && stackMsg.lastMessage}
-																</small>
+																</p>
 															</div>
 														</div>
 														<div>
@@ -164,7 +169,7 @@ const HomeScreen = () => {
 														}}
 														style={{ cursor: 'pointer' }}
 														className='mt-1  justify-content-between align-items-center ps-2 pe-2 d-flex'>
-														<div className='d-flex align-items-center'>
+														<div className='d-flex align-items-center col-11'>
 															<img
 																src={stackMsg.user.profilePhoto}
 																alt=''
@@ -172,7 +177,7 @@ const HomeScreen = () => {
 																referrerPolicy='no-referrer'
 																className='rounded-circle'
 															/>
-															<div className=' ms-3'>
+															<div className=' ms-3 col-10'>
 																<h6
 																	className='mb-0 mt-1'
 																	style={{
@@ -181,11 +186,16 @@ const HomeScreen = () => {
 																	}}>
 																	{stackMsg.user.name}
 																</h6>
-																<small
-																	className='text-muted'
-																	style={{ fontSize: '0.9em' }}>
+																<p
+																	className='text-muted mb-0'
+																	style={{
+																		fontSize: '0.9em',
+																		whiteSpace: 'nowrap',
+																		overflow: 'hidden',
+																		textOverflow: 'ellipsis',
+																	}}>
 																	{stackMsg.lastMessage && stackMsg.lastMessage}
-																</small>
+																</p>
 															</div>
 														</div>
 														<div>
@@ -193,7 +203,7 @@ const HomeScreen = () => {
 																className='text-muted'
 																style={{ fontSize: '0.8em' }}>
 																{stackMsg.lastMessageTime &&
-																	stackMsg.lastMessageTime.slice(15, 21)}
+																	stackMsg.lastMessageTime.slice(11, 16)}
 															</small>
 														</div>
 													</div>

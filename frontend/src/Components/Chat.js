@@ -45,6 +45,7 @@ const Chat = ({
 			setNewMsg({
 				sender: data.sender,
 				message: data.message,
+				type: 'text',
 				createdAt: date.toISOString(),
 			})
 		})
@@ -76,6 +77,7 @@ const Chat = ({
 		setNewMsg({
 			sender: user._id,
 			message: msg,
+			type: 'text',
 			createdAt: date.toISOString(),
 		})
 
@@ -221,11 +223,8 @@ const Chat = ({
 														borderTopLeftRadius: '20px',
 														borderTopRightRadius: '20px',
 													}}>
-													<span
-														style={{ lineHeight: '' }}
-														className='d-inline-block pb-0 mb-0'>
-														{msg.message}
-													</span>
+													{msg.message}
+
 													<span
 														className=' d-inline-block  ms-2  '
 														style={{
