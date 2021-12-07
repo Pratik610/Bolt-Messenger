@@ -22,15 +22,17 @@ export const getChats = asyncHandler(async (req, res) => {
 
 // send message to user
 export const sendMessage = asyncHandler(async (req, res) => {
+	const date = new Date()
 	const chat = await Chat.create({
 		convoId: req.body.convoId,
 		message: req.body.msg,
 		sender: req.user._id,
+		type: req.body.type && req.body.type,
 	})
 
 	const convo = await Members.findById(req.body.convoId)
 	if (convo && chat) {
-		convo.lastMessageTime = Date()
+		convo.lastMessageTime = date.toISOString()
 		convo.lastMessage = req.body.msg
 
 		const update = await convo.save()

@@ -8,6 +8,7 @@ import { errorHandler, notFound } from './middleware/errorMiddleware.js'
 import connectDB from './utils/connectDB.js'
 import userRoutes from './routes/userRoutes.js'
 import chatRoutes from './routes/chatRoutes.js'
+import uploadRoutes from './routes/uploadRoutes.js'
 
 dotenv.config()
 connectDB()
@@ -26,9 +27,10 @@ app.use(cors())
 
 app.use('/api/user', userRoutes)
 app.use('/api/chat', chatRoutes)
+app.use('/api/upload', uploadRoutes)
 
 const __dirname = path.resolve()
-app.use('/images', express.static(path.join(__dirname, '/images')))
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 
 let users = []
 
@@ -56,10 +58,10 @@ io.on('connection', (socket) => {
 	})
 
 	// send and get msg
-	socket.on('sendMessage', ({ sender, reciver, message }) => {
+	socket.on('sendMessage', ({ sender, reciver, message, convoId }) => {
 		const user = getUser(reciver)
 		if (user) {
-			io.to(user.socketId).emit('getMessage', { sender, message })
+			io.to(user.socketId).emit('getMessage', { sender, message, convoId })
 		}
 	})
 

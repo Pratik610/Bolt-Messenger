@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { sendMessageAction } from '../Actions/chatActions'
+import {
+	sendMessageAction,
+	getStackAction,
+	getChatAction,
+} from '../Actions/chatActions'
 import moment from 'moment-timezone'
+import axios from 'axios'
 
 const Chat = ({
 	socket,
@@ -17,10 +22,15 @@ const Chat = ({
 	const [newMsg, setNewMsg] = useState(false)
 	const scrollRef = useRef()
 
+	const [fileLoading, setFileLoading] = useState(false)
+
 	const dispatch = useDispatch()
 
 	const getChat = useSelector((state) => state.getChat)
 	const { chats, loading } = getChat
+
+	const userLogin = useSelector((state) => state.userLogin)
+	const { userId } = userLogin
 
 	const date = new Date()
 	let reciver =
@@ -73,9 +83,36 @@ const Chat = ({
 			sender: user._id,
 			reciver: reciver._id,
 			message: msg,
+			convoId: chats.convoId,
 		})
-		dispatch(sendMessageAction(chats.convoId, msg))
+		dispatch(sendMessageAction({ convoId: chats.convoId, msg }))
 		setMsg('')
+		dispatch(getStackAction())
+	}
+
+	const sendFile = async (e) => {
+		setFileLoading(true)
+		const file = e.target.files[0]
+		const formData = new FormData()
+		formData.append('file', file)
+		try {
+			const config = {
+				headers: {
+					'Content-Type': 'multipart/form-data',
+					Authorization: `Bearer ${userId.tokken}`,
+				},
+			}
+			const { data } = await axios.post('/api/upload', formData, config)
+			if (data) {
+				dispatch(
+					sendMessageAction({ convoId: chats.convoId, msg: data, type: 'file' })
+				)
+				dispatch(getChatAction(reciver._id))
+			}
+			setFileLoading(false)
+		} catch (error) {
+			console.error(error)
+		}
 	}
 
 	return (
@@ -98,8 +135,23 @@ const Chat = ({
 						</div>
 					</div>
 				)}
+				{fileLoading ||
+					(!chats && (
+						<div className=' w-100 h-100'>
+							<div className='w-100 h-100 d-flex justify-content-center align-items-center'>
+								<div className='cube'>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+								</div>
+							</div>
+						</div>
+					))}
 
-				{chats && (
+				{chats && !fileLoading && (
 					<>
 						{/* ..pc... */}
 
@@ -133,7 +185,13 @@ const Chat = ({
 							</div>
 							<div>
 								<div className='me-3 d-inline'>
-									<i onClick={callUser} className='fas fa-phone'></i>
+									{onlineUsers.find((u) => u.userId === reciver._id) ? (
+										<i onClick={callUser} className='fas fa-phone'></i>
+									) : (
+										<i
+											onClick={() => window.alert('User is Offline')}
+											className='fas fa-phone'></i>
+									)}
 								</div>
 							</div>
 						</div>
@@ -145,51 +203,106 @@ const Chat = ({
 							{chatMessages &&
 								chatMessages.map((msg) => (
 									<div key={msg._id}>
-										<div
-											className={`p-1 pe-2  d-flex ${
-												user._id === msg.sender && 'justify-content-end'
-											}`}>
-											<p
-												className={` mb-1 ps-3 pe-3  p-2 ${
-													user._id === msg.sender
-														? 'bottomLeftRadius bg-sender'
-														: 'bottomRightRadius bg-reciver '
-												}`}
-												style={{
-													maxWidth: '75%',
-													wordWrap: 'break-word',
-													borderTopLeftRadius: '20px',
-													borderTopRightRadius: '20px',
-												}}>
-												<span
-													style={{ lineHeight: '' }}
-													className='d-inline-block pb-0 mb-0'>
-													{msg.message}
-												</span>
-												<span
-													className=' d-inline-block  ms-2  '
+										{msg.type === 'text' ? (
+											<div
+												className={`p-1 pe-2  d-flex ${
+													user._id === msg.sender && 'justify-content-end'
+												}`}>
+												<p
+													ref={scrollRef}
+													className={` mb-1 ps-3 pe-3  p-2 ${
+														user._id === msg.sender
+															? 'bottomLeftRadius bg-sender'
+															: 'bottomRightRadius bg-reciver '
+													}`}
 													style={{
-														marginBottom: '-5px',
-														fontSize: '0.6em',
-														lineHeight: '0.2em',
+														maxWidth: '75%',
+														wordWrap: 'break-word',
+														borderTopLeftRadius: '20px',
+														borderTopRightRadius: '20px',
 													}}>
-													{/* {msg.createdAt && msg.createdAt.slice(11, 16)} */}
-													{moment
-														.tz(`${msg.createdAt}`, 'Asia/Kolkata')
-														.format()
-														.slice(11, 16)}
-												</span>
-											</p>
-										</div>
+													<span
+														style={{ lineHeight: '' }}
+														className='d-inline-block pb-0 mb-0'>
+														{msg.message}
+													</span>
+													<span
+														className=' d-inline-block  ms-2  '
+														style={{
+															marginBottom: '-5px',
+															fontSize: '0.6em',
+															lineHeight: '0.2em',
+														}}>
+														{/* {msg.createdAt && msg.createdAt.slice(11, 16)} */}
+														{moment
+															.tz(`${msg.createdAt}`, 'Asia/Kolkata')
+															.format()
+															.slice(11, 16)}
+													</span>
+												</p>
+											</div>
+										) : (
+											<a
+												href={`${msg.message}`}
+												download
+												className='text-decoration-none  text-light'>
+												<div
+													className={` d-flex mb-1 ${
+														user._id === msg.sender && 'justify-content-end'
+													}`}>
+													<div
+														className={`ps-3 pe-3 p-2 pt-3 d-flex file justify-content-between align-items-center ${
+															user._id === msg.sender
+																? ' bg-sender'
+																: ' bg-reciver '
+														}`}
+														style={{
+															borderRadius: '10px',
+														}}>
+														<div className='col-10'>
+															<h4
+																className=''
+																style={{
+																	whiteSpace: 'nowrap',
+																	overflow: 'hidden',
+																	textOverflow: 'ellipsis',
+																}}>
+																<i className='fas fa-file me-md-3 me-2'></i>
+																<span style={{ fontSize: '0.8em' }}>
+																	{msg.message.slice(9)}
+																</span>
+															</h4>
+														</div>
+
+														<h4 className='col-2 text-center'>
+															<i className='fas fa-download'></i>
+														</h4>
+													</div>
+												</div>
+											</a>
+										)}
 									</div>
 								))}
-							<div ref={scrollRef}></div>
 						</div>
 						<div
 							style={{ bottom: '0%', zIndex: '3' }}
 							className='position-absolute  p-2 w-100'>
 							<form className='form-inline' onSubmit={send}>
 								<div className='input-group mb-2'>
+									<input
+										type='file'
+										onChange={sendFile}
+										hidden
+										id='file'
+										name='file'
+									/>
+									<button
+										onClick={() => document.getElementById('file').click()}
+										className='btn btn-success rounded-circle me-1'
+										type='button'
+										id='button-addon2'>
+										<i className='fas fa-plus'></i>
+									</button>
 									<input
 										type='text'
 										value={msg}

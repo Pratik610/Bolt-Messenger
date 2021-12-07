@@ -9,11 +9,13 @@ import { useHistory } from 'react-router'
 import { SocketContext } from '../socket'
 import IncommingCallNotification from '../Components/IncommingCallNotification'
 import OutgoingCallNotification from '../Components/OutgoingCallNotification'
+import moment from 'moment-timezone'
 
 const HomeScreen = () => {
 	const socket = useContext(SocketContext)
 	const history = useHistory()
 
+	const [list, setList] = useState()
 	const [show, setShow] = useState(false)
 	const [onlineUsers, setOnlineUsers] = useState([])
 	const [outgoing, setOutgoing] = useState({ callingUser: {}, active: false })
@@ -36,10 +38,15 @@ const HomeScreen = () => {
 		if (!userId) {
 			history.push('/login')
 		}
-
 		dispatch(getUserLoginInfo())
 		dispatch(getStackAction())
 	}, [dispatch, history, userId])
+
+	useEffect(() => {
+		if (stack) {
+			setList(stack)
+		}
+	}, [stack, list])
 
 	useEffect(() => {
 		if (socket) {
@@ -51,6 +58,12 @@ const HomeScreen = () => {
 			})
 		}
 	}, [user, socket])
+
+	useEffect(() => {
+		socket.on('getMessage', () => {
+			dispatch(getStackAction())
+		})
+	}, [dispatch, socket])
 
 	if (stack) {
 		for (let index = 0; index < stack.stack.length; index++) {
@@ -91,8 +104,8 @@ const HomeScreen = () => {
 									className='p-2  chats '
 									style={{ backgroundColor: '#00171F' }}>
 									<Search user={user} setShow={setShow} />
-									{stack &&
-										stack.stack.map((stackMsg) => (
+									{list &&
+										list.stack.map((stackMsg) => (
 											<div
 												key={stackMsg._id}
 												className={`${searched && 'd-none'}`}>
@@ -131,8 +144,13 @@ const HomeScreen = () => {
 															<small
 																className='text-muted'
 																style={{ fontSize: '0.8em' }}>
-																{stackMsg.lastMessageTime &&
-																	stackMsg.lastMessageTime.slice(15, 21)}
+																{moment
+																	.tz(
+																		`${stackMsg.lastMessageTime}`,
+																		'Asia/Kolkata'
+																	)
+																	.format()
+																	.slice(11, 16)}
 															</small>
 														</div>
 													</div>

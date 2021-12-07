@@ -50,7 +50,8 @@ export const getChatAction = (id) => async (dispatch, getState) => {
 }
 
 export const sendMessageAction =
-	(convoId, msg) => async (dispatch, getState) => {
+	({ convoId, msg, type }) =>
+	async (dispatch, getState) => {
 		try {
 			dispatch({
 				type: SEND_MSG_REQUEST,
@@ -68,7 +69,7 @@ export const sendMessageAction =
 
 			const { data } = await axios.post(
 				'/api/chat/sendmsg',
-				{ convoId, msg },
+				{ convoId, msg, type },
 				config
 			)
 
