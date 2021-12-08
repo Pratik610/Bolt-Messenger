@@ -67,7 +67,7 @@ const HomeScreen = () => {
 
 	useEffect(() => {
 		socket.on('callRejected', () => {
-			setOutgoing((outgoing.active = false))
+			setOutgoing({ active: false })
 			window.alert('Call Rejected')
 		})
 	}, [socket, outgoing])

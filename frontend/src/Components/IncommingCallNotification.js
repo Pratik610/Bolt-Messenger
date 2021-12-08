@@ -13,6 +13,12 @@ const IncommingCallNotification = ({ user, socket, history, dispatch }) => {
 		})
 	})
 
+	useEffect(() => {
+		socket.on('callCanceled', () => {
+			setIncoming(false)
+		})
+	}, [socket])
+
 	const acceptCall = () => {
 		socket.emit('answerCall', { user, caller: callerId, reciver: callerId })
 		dispatch({

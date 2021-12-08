@@ -72,12 +72,19 @@ const Search = ({ user, setShow }) => {
 											</h6>
 										</div>
 										{user.friends.find((id) => id === searchedUser._id) ? (
-											<i
-												className='fas h5 fa-comment-alt'
-												onClick={() => {
-													dispatch(getChatAction(searchedUser._id))
-													setShow(true)
-												}}></i>
+											<>
+												<i
+													className='fas h5 fa-comment-alt d-md-none'
+													onClick={() => {
+														dispatch(getChatAction(searchedUser._id))
+														setShow(true)
+													}}></i>
+												<i
+													className='fas h5 fa-comment-alt d-none d-md-block'
+													onClick={() => {
+														dispatch(getChatAction(searchedUser._id))
+													}}></i>
+											</>
 										) : (
 											<div>
 												{searchedUser.pendingRequest.find(

@@ -82,11 +82,18 @@ io.on('connection', (socket) => {
 		}
 	})
 
-	// answer call
+	// reject call
 	socket.on('rejectCall', ({ reciver }) => {
 		const userTo = getUser(reciver)
 		if (userTo) {
 			io.to(userTo.socketId).emit('callRejected')
+		}
+	})
+
+	socket.on('cancelCall', ({ reciver }) => {
+		const userTo = getUser(reciver)
+		if (userTo) {
+			io.to(userTo.socketId).emit('callCanceled')
 		}
 	})
 

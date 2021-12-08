@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react'
 import { CALL_USER_DATA } from '../Constants/chatConstants'
-const OutgoingCallNotification = ({ outgoing, socket, dispatch, history }) => {
+const OutgoingCallNotification = ({
+	outgoing,
+	socket,
+	dispatch,
+	history,
+	setOutgoing,
+}) => {
 	useEffect(() => {
 		socket.on('callAccepted', ({ caller, user: userData }) => {
 			dispatch({
@@ -13,6 +19,12 @@ const OutgoingCallNotification = ({ outgoing, socket, dispatch, history }) => {
 			history.push('/call')
 		})
 	})
+
+	const cancelCall = () => {
+		socket.emit('cancelCall', { reciver: outgoing.callingUser._id })
+		setOutgoing((outgoing.active = false))
+	}
+
 	return (
 		<div className='main-noti'>
 			<div className='callNotification    p-2 '>
@@ -35,7 +47,9 @@ const OutgoingCallNotification = ({ outgoing, socket, dispatch, history }) => {
 						</h6>
 						<div className='d-flex'>
 							<div className='w-100 p-1'>
-								<button className='btn btn-danger w-100  '>Cancel</button>
+								<button className='btn btn-danger w-100 ' onClick={cancelCall}>
+									Cancel
+								</button>
 							</div>
 						</div>
 					</div>
