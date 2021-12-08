@@ -10,10 +10,12 @@ const CallScreen = () => {
 	const socket = useContext(SocketContext)
 	const history = useHistory()
 
-	let stream
 	let mic_switch = true
 	let video_switch = true
 
+	const [test, setTest] = useState(false)
+
+	const stream = useRef()
 	const myVideo = useRef()
 	const userVideo = useRef()
 	const connection = useRef()
@@ -56,12 +58,12 @@ const CallScreen = () => {
 				})
 				.then((currentStream) => {
 					myVideo.current.srcObject = currentStream
-					stream = currentStream
+					stream.current = currentStream
 					const peer = new Peer({
 						initiator: callData.callerId === user._id ? true : false,
 						wrtc: wrtc,
 						trickle: false,
-						stream,
+						stream: stream.current,
 					})
 
 					peer.on('signal', (data) => {
@@ -93,18 +95,19 @@ const CallScreen = () => {
 	// ..............
 
 	const toggleVideo = () => {
-		if (stream != null && stream.getVideoTracks().length > 0) {
+		if (stream != null && stream.current.getVideoTracks().length > 0) {
 			video_switch = !video_switch
-
-			stream.getVideoTracks()[0].enabled = video_switch
+			stream.current.getVideoTracks()[0].enabled = video_switch
+			setTest(!test)
+			console.log(myVideo)
 		}
 	}
 
 	const toggleMic = () => {
-		if (stream != null && stream.getAudioTracks().length > 0) {
+		if (stream != null && stream.current.getAudioTracks().length > 0) {
 			mic_switch = !mic_switch
 
-			stream.getAudioTracks()[0].enabled = mic_switch
+			stream.current.getAudioTracks()[0].enabled = mic_switch
 		}
 	}
 
@@ -129,8 +132,9 @@ const CallScreen = () => {
 				/>
 
 				<div
-					className='position-absolute  myvideo'
+					className='position-absolute  myvideo '
 					style={{ top: '0%', right: '0%' }}>
+					{stream.current.getVideoTracks()[0].enabled  && <p>wdwadwa</p>}
 					<video
 						style={{ objectFit: 'cover', borderRadius: '10px' }}
 						playsInline

@@ -65,6 +65,13 @@ const HomeScreen = () => {
 		})
 	}, [dispatch, socket])
 
+	useEffect(() => {
+		socket.on('callRejected', () => {
+			setOutgoing((outgoing.active = false))
+			window.alert('Call Rejected')
+		})
+	}, [socket, outgoing])
+
 	if (stack) {
 		for (let index = 0; index < stack.stack.length; index++) {
 			const temp = stack.stack[index].users.filter((u) => u !== user._id)

@@ -24,6 +24,12 @@ const IncommingCallNotification = ({ user, socket, history, dispatch }) => {
 		})
 		history.push('/call')
 	}
+
+	const rejectCall = () => {
+		socket.emit('rejectCall', { reciver: callerId })
+		setIncoming(false)
+	}
+
 	return (
 		<div className={`main-noti ${!incoming && 'd-none'}`}>
 			<div className='callNotification    p-2 '>
@@ -46,7 +52,9 @@ const IncommingCallNotification = ({ user, socket, history, dispatch }) => {
 						</h6>
 						<div className='d-flex'>
 							<div className='w-50 p-1'>
-								<button className='btn btn-danger w-100  '>Reject</button>
+								<button className='btn btn-danger w-100 ' onClick={rejectCall}>
+									Reject
+								</button>
 							</div>
 							<div className='w-50 p-1'>
 								<button className='btn btn-success  w-100' onClick={acceptCall}>
