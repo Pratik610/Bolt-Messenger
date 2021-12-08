@@ -1,7 +1,7 @@
 import React from 'react'
 import { io } from 'socket.io-client'
 
-export const socket = io('ws://localhost:5000', {
+export const socket = io('https://bolt-messenger.herokuapp.com', {
 	transports: ['websocket', 'polling'],
 })
 export const SocketContext = React.createContext()
